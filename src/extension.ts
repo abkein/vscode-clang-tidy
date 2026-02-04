@@ -53,7 +53,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     subscriptions.push(
         workspace.onDidSaveTextDocument((doc) => {
-            if (workspace.getConfiguration("clang-tidy").get("lintOnSave")) {
+            if (
+                workspace
+                    .getConfiguration("clang-tidy")
+                    .get<boolean>("lintOnSave", true)
+            ) {
                 if (
                     doc.uri.scheme === "file" &&
                     doc.uri.fsPath.endsWith(".clang-tidy")
@@ -63,7 +67,7 @@ export function activate(context: vscode.ExtensionContext) {
                 } else {
                     const fixErrors = workspace
                         .getConfiguration("clang-tidy")
-                        .get("fixOnSave") as boolean;
+                        .get<boolean>("fixOnSave", false);
                     lintAndSetDiagnostics(doc, fixErrors);
                 }
             }

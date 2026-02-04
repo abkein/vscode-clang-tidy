@@ -21,11 +21,11 @@ export async function lintActiveTextDocument(
 function isBlacklisted(file: vscode.TextDocument) {
     const blacklist = vscode.workspace
         .getConfiguration("clang-tidy")
-        .get("blacklist") as Array<string>;
+        .get<string[]>("blacklist", []);
 
     const relativeFilename = vscode.workspace.asRelativePath(file.fileName);
 
-    return blacklist.some((entry) => {
+    return blacklist.some((entry: string) => {
         const regex = new RegExp(entry);
         return regex.test(relativeFilename);
     });

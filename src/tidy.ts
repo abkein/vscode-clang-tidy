@@ -12,7 +12,7 @@ function clangTidyArgs(files: string[], fixErrors: boolean) {
 
     const checks = vscode.workspace
         .getConfiguration("clang-tidy")
-        .get("checks") as Array<string>;
+        .get<string[]>("checks", []);
 
     if (checks.length > 0) {
         args.push(`--checks=${checks.join(",")}`);
@@ -20,23 +20,23 @@ function clangTidyArgs(files: string[], fixErrors: boolean) {
 
     const compilerArgs = vscode.workspace
         .getConfiguration("clang-tidy")
-        .get("compilerArgs") as Array<string>;
+        .get<string[]>("compilerArgs", []);
 
-    compilerArgs.forEach((arg) => {
+    compilerArgs.forEach((arg: string) => {
         args.push(`--extra-arg=${arg}`);
     });
 
     const compilerArgsBefore = vscode.workspace
         .getConfiguration("clang-tidy")
-        .get("compilerArgsBefore") as Array<string>;
+        .get<string[]>("compilerArgsBefore", []);
 
-    compilerArgsBefore.forEach((arg) => {
+    compilerArgsBefore.forEach((arg: string) => {
         args.push(`--extra-arg-before=${arg}`);
     });
 
     const buildPath = vscode.workspace
         .getConfiguration("clang-tidy")
-        .get("buildPath") as string;
+        .get<string>("buildPath", "");
 
     if (buildPath.length > 0) {
         args.push(`-p=${buildPath}`);
@@ -60,7 +60,7 @@ function clangTidyArgs(files: string[], fixErrors: boolean) {
 function clangTidyExecutable() {
     return vscode.workspace
         .getConfiguration("clang-tidy")
-        .get("executable") as string;
+        .get<string>("executable", "clang-tidy");
 }
 
 class ChildProcessWithExitFlag {
@@ -144,7 +144,10 @@ export function runClangTidy(
     };
     const progressBarLocation = vscode.workspace
         .getConfiguration("clang-tidy")
-        .get("progressBarLocation") as ProgressLocation;
+        .get<ProgressLocation>(
+            "progressBarLocation",
+            ProgressLocation.Notification
+        );
 
     if (progressBarLocation === ProgressLocation.StatusBar)
         updateStatusBar(fixErrors ? StatusBarState.LintAndFix : StatusBarState.Linting);
