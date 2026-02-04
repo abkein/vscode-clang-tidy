@@ -42,6 +42,14 @@ function clangTidyArgs(files: string[], fixErrors: boolean) {
         args.push(`-p=${buildPath}`);
     }
 
+    const configFile = vscode.workspace
+        .getConfiguration("clang-tidy")
+        .get<string>("configFile", "");
+
+    if (configFile.length > 0) {
+        args.push(`--config-file=${configFile}`);
+    }
+
     if (fixErrors) {
         args.push("--fix");
     }

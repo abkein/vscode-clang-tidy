@@ -70,6 +70,11 @@
                     "default": "",
                     "description": "Path to the build folder"
                 },
+                "clang-tidy.configFile": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Path to a clang-tidy config file"
+                },
                 "clang-tidy.blacklist": {
                     "type": "array",
                     "default": [],
