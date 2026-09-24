@@ -14,3 +14,4 @@ images/diagnostics.gif
 vsc-extension-quickstart.md
 flake.*
 .prettierignore
+*.vsix
