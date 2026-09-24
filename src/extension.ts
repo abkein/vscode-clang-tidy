@@ -23,6 +23,13 @@ export function activate(context: vscode.ExtensionContext) {
     let diagnosticCollection = vscode.languages.createDiagnosticCollection();
     subscriptions.push(diagnosticCollection);
 
+    function deleteDiagnostics(uri: vscode.Uri) {
+        // VS Code emits an update even when deleting an untracked URI.
+        if (diagnosticCollection.has(uri)) {
+            diagnosticCollection.delete(uri);
+        }
+    }
+
     let loggingChannel = vscode.window.createOutputChannel("Clang-Tidy");
     subscriptions.push(loggingChannel);
 
@@ -36,7 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
             fixErrors
         );
         if (diagnostics.length === 0)
-            diagnosticCollection.delete(file.uri);
+            deleteDiagnostics(file.uri);
         else
             diagnosticCollection.set(file.uri, diagnostics);
     }
@@ -45,7 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
         const diag = await lintActiveTextDocument(loggingChannel);
         if (diag.document) {
             if (diag.diagnostics.length === 0)
-                diagnosticCollection.delete(diag.document.uri);
+                deleteDiagnostics(diag.document.uri);
             else
                 diagnosticCollection.set(diag.document.uri, diag.diagnostics);
         }
@@ -75,7 +82,7 @@ export function activate(context: vscode.ExtensionContext) {
     );
     subscriptions.push(
         workspace.onDidCloseTextDocument((doc) =>
-            diagnosticCollection.delete(doc.uri)
+            deleteDiagnostics(doc.uri)
         )
     );
 
@@ -100,7 +107,7 @@ export function activate(context: vscode.ExtensionContext) {
     subscriptions.push(
         workspace.onDidChangeTextDocument((doc) => {
             const diagnostics = diagnosticCollection.get(doc.document.uri);
-            if (!diagnostics) {
+            if (!diagnostics || diagnostics.length === 0) {
                 return;
             }
 
@@ -115,7 +122,7 @@ export function activate(context: vscode.ExtensionContext) {
             });
 
             if (newDiagnostics.length === 0)
-                diagnosticCollection.delete(doc.document.uri);
+                deleteDiagnostics(doc.document.uri);
             else if (newDiagnostics.length !== diagnostics.length)
                 diagnosticCollection.set(doc.document.uri, newDiagnostics);
         })
@@ -140,7 +147,7 @@ export function activate(context: vscode.ExtensionContext) {
                 if (vscode.window.activeTextEditor && document !== vscode.window.activeTextEditor.document) {
                     const activeDoc = vscode.window.activeTextEditor.document;
                     const diagnostics = diagnosticCollection.get(activeDoc.uri);
-                    if (!diagnostics)
+                    if (!diagnostics || diagnostics.length === 0)
                         return;
 
                     if (range) {
@@ -152,7 +159,7 @@ export function activate(context: vscode.ExtensionContext) {
                             }
                         });
                         if (newDiagnostics.length === 0)
-                            diagnosticCollection.delete(activeDoc.uri);
+                            deleteDiagnostics(activeDoc.uri);
                         else if (newDiagnostics.length !== diagnostics.length)
                             diagnosticCollection.set(activeDoc.uri, newDiagnostics);
                     }

@@ -1,47 +1,27 @@
 {
   description = "TypeScript dev shell";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs = {
+    system-flake.url = "path:/home/kein/nixos-configuration";
+    nixpkgs.follows = "system-flake/nixpkgs";
+    flake-utils.follows = "system-flake/flake-utils";
+  };
 
   outputs =
-    { self, nixpkgs }:
-
-    let
-      workspaceName = "vscode-clang-tidy";
-      root = "/home/kein/repos/vscode-clang-tidy";
-      vscodeDir = "${root}/.vscode";
-
-      system = "x86_64-linux";
-      pkgs = import nixpkgs { inherit system; };
-
-
-      workspaceFileLoc = "${vscodeDir}/${workspaceName}.code-workspace";
-      workspaceFile = pkgs.writeText "${workspaceName}.code-workspace" (
-        builtins.toJSON {
-          folders = [
-            {
-              path = root;
-            }
+    { self, nixpkgs, flake-utils, ... }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
+      let
+        pkgs = import nixpkgs { inherit system; };
+      in
+      {
+        devShells.default = pkgs.mkShell {
+          packages = with pkgs; [
+            jq
+            nodejs
+            vsce
           ];
-          settings = {
-
-          };
-        }
-      );
-    in
-    {
-      devShells.${system}.default = pkgs.mkShell {
-        packages = with pkgs; [
-          jq
-          nodejs_24
-        ];
-
-        shellHook = ''
-          mkdir -p '${vscodeDir}'
-          export BETTER_CODE_VSCODE_WORKSPACE_FILE='${workspaceFileLoc}'
-          cat '${workspaceFile}' | jq . > '${workspaceFileLoc}'
-
-        '';
-      };
-    };
+        };
+      }
+    );
 }
