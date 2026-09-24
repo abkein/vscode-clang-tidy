@@ -548,8 +548,8 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1790277742,
-        "narHash": "sha256-CsDECFRaHnzKDt0LP7ukXgiXwIsC6uN0sgPBnA3PUFs=",
+        "lastModified": 1790290632,
+        "narHash": "sha256-itFtX+p+AlcQ71wlvD0MPbvFi0rjX01y9X+Dvxo32/0=",
         "path": "/home/kein/nixos-configuration",
         "type": "path"
       },

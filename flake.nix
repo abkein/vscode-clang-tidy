@@ -8,13 +8,19 @@
   };
 
   outputs =
-    { self, nixpkgs, flake-utils, ... }:
+    {
+      nixpkgs,
+      flake-utils,
+      system-flake,
+      ...
+    }:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
         pkgs = import nixpkgs { inherit system; };
       in
       {
+        formatter = system-flake.formatter.${system};
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             jq

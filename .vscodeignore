@@ -1,17 +1,18 @@
 .vscode/**
 .vscode-test/**
+**/.vscode-test.*
 .git/**
 .github/**
 .gitignore
 src/**
 out/test/**
 **/tsconfig.json
-**/tslint.json
+**/eslint.config.mjs
 **/*.map
 **/*.ts
+.yarnrc
 
 images/diagnostics.gif
-vsc-extension-quickstart.md
 flake.*
 .prettierignore
 *.vsix
